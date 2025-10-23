@@ -9,8 +9,14 @@ export default function HankoAuth() {
 
   const hanko = useMemo(() => new Hanko(hankoApi), []);
 
+  const generateUserID = () => Math.random().toString(36).substring(2, 10);
+
   const redirectAfterLogin = useCallback(() => {
     // redirect to a page in your application
+    localStorage.setItem("loggedIn", "true");
+    if (!localStorage.getItem("u_id")) {
+      localStorage.setItem("u_id", generateUserID());
+    }
     navigate("/");
   }, [navigate]);
 

@@ -19,21 +19,18 @@ const Prompts = () => {
   useEffect(() => {
     const storedIndex = localStorage.getItem("promptIndex");
     const storedDate = localStorage.getItem("promptDate");
-    const today = new Date().toDateString(); // e.g. "Mon Aug 18 2025"
+    const today = new Date().toDateString();
 
     if (storedIndex && storedDate) {
       if (storedDate === today) {
-        // same day → use stored index
         setCurrentPromptIndex(Number(storedIndex));
       } else {
-        // new day → move to next prompt
         const nextIndex = (Number(storedIndex) + 1) % prompts.length;
         setCurrentPromptIndex(nextIndex);
         localStorage.setItem("promptIndex", String(nextIndex));
         localStorage.setItem("promptDate", today);
       }
     } else {
-      // first time loading
       setCurrentPromptIndex(0);
       localStorage.setItem("promptIndex", "0");
       localStorage.setItem("promptDate", today);
@@ -44,13 +41,34 @@ const Prompts = () => {
     <div
       className="daily-prompt"
       style={{
-        backgroundColor: "cornsilk",
-        padding: "1rem",
-        borderRadius: "8px",
+        backgroundColor: "#fff",
+        padding: "1.5rem 2rem",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        textAlign: "center",
+        maxWidth: "600px",
+        margin: "1.5rem auto",
       }}
     >
-      <h2>Here is your prompt for the day...</h2>
-      <div style={{ fontSize: "1.25rem", marginTop: "0.5rem" }}>
+      <h2
+        style={{
+          fontSize: "1.5rem",
+          marginBottom: "0.75rem",
+          color: "#333",
+        }}
+      >
+        Here is your prompt for the day...
+      </h2>
+      <div
+        style={{
+          fontSize: "1.25rem",
+          fontWeight: "500",
+          color: "#444",
+          background: "#f9fafc",
+          padding: "1rem",
+          borderRadius: "8px",
+        }}
+      >
         {prompts[currentPromptIndex]}
       </div>
     </div>
