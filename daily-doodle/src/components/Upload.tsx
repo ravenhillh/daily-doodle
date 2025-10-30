@@ -1,22 +1,36 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { addNewPost } from "../utils/util";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+
+interface DailyWordData {
+  word: string;
+  date: string;
+}
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [dailyWord, setDailyWord] = useState<DailyWordData | null>(null);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+  useEffect(() => {
+    fetch("/.netlify/functions/getDailyWord")
+      .then((res) => res.json())
+      .then((data) => setDailyWord(data))
+      .catch((err) => console.error("Error fetching word:", err));
+  }, []);
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    if (!file) return;
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         alert("File size exceeds 5MB. Please choose a smaller file.");
         setSelectedFile(null);
         setPreview(null);
-        event.target.value = ""; // reset input
+        event.target.value = ""; // Reset input field
         return;
       }
       setSelectedFile(file);
@@ -25,11 +39,8 @@ const Upload = () => {
   };
 
   const formatDate = (): string => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${month}-${day}-${year}`;
+    const d = new Date();
+    return `${d.getMonth() + 1}-${d.getDate()}-${d.getFullYear()}`;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -40,89 +51,94 @@ const Upload = () => {
       return;
     }
 
-    const u_id = localStorage.getItem("u_id") ?? "";
-    const date = formatDate();
+    setIsUploading(true);
 
     try {
-      // Convert the File to an ArrayBuffer for upload
+      // Convert File to Buffer
       const arrayBuffer = await selectedFile.arrayBuffer();
+      const buffer = Array.from(new Uint8Array(arrayBuffer)); // convert to plain array for JSON-safe transfer
 
-      // Prepare data object according to addNewPost() requirements
-      const formData = {
-        u_id,
-        title: title || selectedFile.name, // use file name if no title
-        content: content || "",
-        date,
+      const payload = {
+        u_id: localStorage.getItem("u_id") ?? "",
+        title: title || selectedFile.name,
+        content,
+        date: formatDate(),
+        word: dailyWord?.word, // 👈 Include word of the day
         file: {
-          buffer: Buffer.from(arrayBuffer),
+          buffer, // serialized file data
           mimetype: selectedFile.type,
         },
       };
 
-      const result = await addNewPost(formData);
-      console.log("Upload successful:", result);
-      alert("Post added successfully!");
+      const response = await fetch("/.netlify/functions/addNewPost", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      // Reset state
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Upload success:", data);
+
+      alert("Post uploaded successfully! ✅");
+
+      // Reset form
       setSelectedFile(null);
       setPreview(null);
       setTitle("");
       setContent("");
-    } catch (err) {
-      console.error("Error uploading file:", err);
-      alert("Failed to upload file. Please try again.");
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload post. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <div>
-      <div
-        className="photo-upload"
-        style={{
-          backgroundColor: "#fff",
-          border: "2px dashed #bbb",
-          borderRadius: "12px",
-          padding: "2rem",
-          marginTop: "2rem",
-          width: "100%",
-          maxWidth: "600px",
-          textAlign: "center",
-          color: "#555",
-          transition: "0.3s",
-          cursor: "pointer",
-        }}
-      >
-        <form className="newPost_form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Enter a title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{ marginBottom: "1rem", width: "80%", padding: "0.5rem" }}
-            required
+      {dailyWord && (
+        <div
+          style={{
+            background: "#fff8dc",
+            padding: "1rem",
+            borderRadius: "8px",
+            marginBottom: "1rem",
+            textAlign: "center",
+          }}
+        >
+          <h3>🎨 Today's Word: {dailyWord.word}</h3>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <textarea
+          placeholder="Description (optional)"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            style={{ width: "200px", marginTop: "10px" }}
           />
-          <textarea
-            placeholder="Enter content (optional)"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            style={{ marginBottom: "1rem", width: "80%", padding: "0.5rem" }}
-          />
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-          {preview && (
-            <div>
-              <h3>Preview:</h3>
-              <img
-                src={preview}
-                alt="Preview"
-                style={{ width: "200px", marginTop: "10px" }}
-              />
-            </div>
-          )}
-          <button className="newPostBtn submitBtn" type="submit">
-            Submit Photo
-          </button>
-        </form>
-      </div>
+        )}
+        <button type="submit" disabled={isUploading}>
+          {isUploading ? "Uploading..." : "Submit Drawing"}
+        </button>
+      </form>
     </div>
   );
 };

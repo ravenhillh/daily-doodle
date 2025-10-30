@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = "https://a3443068-44a3-4f89-ac6a-8ff884ef0fc4.hanko.io";
+const hankoApi = process.env.HANKO_API as string;
 
 export default function HankoProfile() {
   useEffect(() => {

@@ -1,76 +1,48 @@
 import { useEffect, useState } from "react";
 
-const Prompts = () => {
-  const prompts = [
-    "draw a horse",
-    "draw a panther",
-    "draw the eiffel tower",
-    "draw a tree playing the saxophone",
-    "draw two cowboys fighting",
-    "draw a flying car",
-    "draw a birthday cake",
-    "draw a monkey playing the flute",
-    "draw a house with multiple levels",
-    "draw an octopus climbing a staircase",
-  ];
+interface DailyWordData {
+  word: string;
+  date: string;
+}
 
-  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+const Prompts = () => {
+  const [data, setData] = useState<DailyWordData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedIndex = localStorage.getItem("promptIndex");
-    const storedDate = localStorage.getItem("promptDate");
-    const today = new Date().toDateString();
+    fetch("/.netlify/functions/getDailyWord")
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching word:", err);
+        setLoading(false);
+      });
+  }, []);
 
-    if (storedIndex && storedDate) {
-      if (storedDate === today) {
-        setCurrentPromptIndex(Number(storedIndex));
-      } else {
-        const nextIndex = (Number(storedIndex) + 1) % prompts.length;
-        setCurrentPromptIndex(nextIndex);
-        localStorage.setItem("promptIndex", String(nextIndex));
-        localStorage.setItem("promptDate", today);
-      }
-    } else {
-      setCurrentPromptIndex(0);
-      localStorage.setItem("promptIndex", "0");
-      localStorage.setItem("promptDate", today);
-    }
-  }, [prompts.length]);
+  if (loading) return <p>Loading word of the day...</p>;
+  if (!data) return <p>Could not load word.</p>;
 
   return (
     <div
-      className="daily-prompt"
       style={{
-        backgroundColor: "#fff",
-        padding: "1.5rem 2rem",
+        margin: "2rem auto",
+        padding: "2rem",
         borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        border: "2px solid #ccc",
+        maxWidth: "400px",
         textAlign: "center",
-        maxWidth: "600px",
-        margin: "1.5rem auto",
+        background: "#fffaf0",
       }}
     >
-      <h2
-        style={{
-          fontSize: "1.5rem",
-          marginBottom: "0.75rem",
-          color: "#333",
-        }}
-      >
-        Here is your prompt for the day...
-      </h2>
-      <div
-        style={{
-          fontSize: "1.25rem",
-          fontWeight: "500",
-          color: "#444",
-          background: "#f9fafc",
-          padding: "1rem",
-          borderRadius: "8px",
-        }}
-      >
-        {prompts[currentPromptIndex]}
-      </div>
+      <h2>🎨 Word of the Day</h2>
+      <h1 style={{ fontSize: "2.5rem", color: "#ff5722" }}>{data.word}</h1>
+      <p style={{ color: "#666" }}>Date: {data.date}</p>
+      <p style={{ fontStyle: "italic", marginTop: "1rem" }}>
+        Draw something inspired by "{data.word}"!
+      </p>
     </div>
   );
 };
