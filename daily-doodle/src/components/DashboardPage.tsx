@@ -3,7 +3,7 @@ import { Hanko } from "@teamhanko/hanko-elements";
 
 import HankoProfile from "./HankoProfile";
 
-const hankoApi = process.env.HANKO_API as string;
+const hankoApi = "https://a3443068-44a3-4f89-ac6a-8ff884ef0fc4.hanko.io";
 
 export default function Dashboard() {
   //   const hanko = useMemo(() => new Hanko(hankoApi), []);
