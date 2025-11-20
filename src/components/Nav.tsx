@@ -19,7 +19,7 @@ const Nav = () => {
       }}
     >
       {/* Logo */}
-      <div style={{ fontSize: "1.8rem" }}>daily doodle</div>
+      <div style={{ fontSize: "1.8rem" }}>daily doodles</div>
 
       {/* Links */}
       <div

@@ -29,7 +29,7 @@ function Home() {
             letterSpacing: "1px",
           }}
         >
-          Daily Doodle
+          Daily Doodles
         </h1>
 
         {/* <Prompts /> */}

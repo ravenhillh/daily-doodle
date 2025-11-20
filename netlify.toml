@@ -8,6 +8,9 @@
   port = 5173
   functionsPort = 8888
 
+[functions]
+  included_files = ["netlify/functions/getDailyWord/drawableWords.json"]
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
