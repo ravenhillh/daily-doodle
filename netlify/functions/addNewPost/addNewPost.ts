@@ -60,7 +60,6 @@ export const handler: Handler = async (event) => {
       Key: title,
       Body: fileBuffer,
       ContentType: file.mimetype,
-      ACL: "public-read",
     };
 
     const response = await s3Client.upload(uploadParams).promise();
