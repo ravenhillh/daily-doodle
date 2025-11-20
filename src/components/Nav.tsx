@@ -44,6 +44,20 @@ const Nav = () => {
         >
           Dashboard
         </Link>
+        <Link
+          to="/gallery"
+          style={{
+            color: "white",
+            textDecoration: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "6px",
+            transition: "background 0.3s",
+          }}
+          // onMouseEnter={(e) => (e.target.style.background = "#333")}
+          // onMouseLeave={(e) => (e.target.style.background = "transparent")}
+        >
+          Gallery
+        </Link>
         <LogoutBtn />
       </div>
     </div>
