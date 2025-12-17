@@ -114,28 +114,32 @@ const Upload = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="drawing-form">
+        <h2 className="form-title">Submit Drawing</h2>
         <input
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          className="form-input"
         />
         <textarea
           placeholder="Description (optional)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          className="form-textarea"
         />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="form-file"
+        />
         {preview && (
-          <img
-            src={preview}
-            alt="Preview"
-            style={{ width: "200px", marginTop: "10px" }}
-          />
+          <img src={preview} alt="Preview" className="image-preview" />
         )}
-        <button type="submit" disabled={isUploading}>
+        <button type="submit" disabled={isUploading} className="form-button">
           {isUploading ? "Uploading..." : "Submit Drawing"}
         </button>
       </form>
