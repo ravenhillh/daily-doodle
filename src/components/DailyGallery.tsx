@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Nav from "./Nav";
 
 interface DailyWordData {
   word: string;
@@ -51,6 +52,7 @@ const DailyGallery = () => {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <Nav />
       {dailyWord && (
         <h2 style={{ textAlign: "center" }}>
           🎨 Drawings for:{" "}

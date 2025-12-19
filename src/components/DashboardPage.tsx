@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
+import Nav from "./Nav";
 
 import HankoProfile from "./HankoProfile";
 
@@ -20,6 +21,7 @@ export default function Dashboard() {
 
   return (
     <div>
+      <Nav />
       <HankoProfile />
     </div>
   );
