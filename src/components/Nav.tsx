@@ -19,7 +19,16 @@ const Nav = () => {
       }}
     >
       {/* Logo */}
-      <Link to="/">
+      <Link
+        to="/"
+        style={{
+          color: "white",
+          textDecoration: "none",
+          padding: "0.5rem 1rem",
+          borderRadius: "6px",
+          transition: "background 0.3s",
+        }}
+      >
         <div style={{ fontSize: "1.8rem" }}>daily doodles 🐛</div>
       </Link>
 
