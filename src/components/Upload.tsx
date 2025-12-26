@@ -4,7 +4,9 @@ interface DailyWordData {
   word: string;
   date: string;
 }
-
+//upload not working on mobile
+//styling needs update for mobile
+//navbar on gallery page has space on top of it
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);

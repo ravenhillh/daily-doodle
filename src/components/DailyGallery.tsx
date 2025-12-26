@@ -68,9 +68,10 @@ const DailyGallery = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(3, 1fr)",
             gap: "1rem",
-            marginTop: "2rem",
+            maxWidth: "1200px",
+            margin: "2rem auto",
           }}
         >
           {posts.map((post) => (
@@ -81,6 +82,8 @@ const DailyGallery = () => {
                 borderRadius: "8px",
                 overflow: "hidden",
                 background: "#fff",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <img
@@ -88,10 +91,11 @@ const DailyGallery = () => {
                 alt={post.title}
                 style={{
                   width: "100%",
-                  height: "220px",
+                  aspectRatio: "1 / 1",
                   objectFit: "cover",
                 }}
               />
+
               <div style={{ padding: "0.5rem 1rem" }}>
                 <h3 style={{ margin: "0.5rem 0" }}>{post.title}</h3>
                 {post.content && (
